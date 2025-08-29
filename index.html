@@ -37,32 +37,16 @@
   <body>
     <div id="colorlib-page">
       <div class="container-wrap">
-        <a
-          href="#"
-          class="js-colorlib-nav-toggle colorlib-nav-toggle"
-          data-toggle="collapse"
-          data-target="#navbar"
-          aria-expanded="false"
-          aria-controls="navbar"
-        ><i></i></a>
-        <aside
-          id="colorlib-aside"
-          role="complementary"
-          class="border js-fullheight no-print"
-        >
-          <div class="text-center">
+        <!-- Horizontal Banner/Header -->
+        <header id="colorlib-header" class="no-print">
+          <div class="header-content">
             <div class="author-img">
               <img id="profile-img" />
             </div>
-            <h1 id="colorlib-logo"><a href="./index.html">Nicholas Broussard</a></h1>
-          </div>
-          <nav
-            id="colorlib-main-menu"
-            role="navigation"
-            class="navbar"
-            style="padding-top: 2em"
-          >
-            <div id="navbar" class="collapse">
+            <h1 id="colorlib-logo">
+              <a href="./index.html">Nicholas Broussard</a>
+            </h1>
+            <nav id="colorlib-main-menu" role="navigation" class="navbar">
               <ul>
                 <li><a href="#" data-nav-section="about">About</a></li>
                 <li><a href="#" data-nav-section="skills">Skills</a></li>
@@ -71,9 +55,9 @@
                 <li><a href="#" data-nav-section="repos">Top Repositories</a></li>
                 <li><a href="#" data-nav-section="contact">Contact</a></li>
               </ul>
-            </div>
-          </nav>
-        </aside>
+            </nav>
+          </div>
+        </header>
         <div id="colorlib-main">
           <section class="colorlib-about" data-section="about">
             <div class="colorlib-narrow-content">
@@ -81,6 +65,24 @@
                 <div class="about-desc">
                   <h1>About</h1>
                   <div id="bio"></div>
+                  <!-- Add badges and logo here -->
+                  <div class="badges-logos">
+                    <img
+                      src="images/comptia-security-plus.png"
+                      alt="CompTIA Security+"
+                      class="badge-img"
+                    />
+                    <img
+                      src="images/comptia-network-plus.png"
+                      alt="CompTIA Network+"
+                      class="badge-img"
+                    />
+                    <img
+                      src="images/sam-houston-logo.png"
+                      alt="Sam Houston State University"
+                      class="school-logo"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -110,7 +112,9 @@
                   <h1>Work <span style="color: #f9bf3f">Experience</span></h1>
                 </div>
               </div>
-              <div class="timeline-centered" id="experience"></div>
+              <div class="timeline-centered" id="experience">
+                <!-- Timeline entries will be rendered by JS -->
+              </div>
             </div>
           </section>
 
@@ -124,7 +128,9 @@
                   <h1>Education</h1>
                 </div>
               </div>
-              <div class="timeline-centered" id="education"></div>
+              <div class="timeline-centered" id="education">
+                <!-- Timeline entries will be rendered by JS -->
+              </div>
             </div>
           </section>
 
@@ -196,6 +202,18 @@
                     Vinay Somawat's original project
                   </a>.
                 </p>
+              </footer>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
               </footer>
             </div>
           </section>

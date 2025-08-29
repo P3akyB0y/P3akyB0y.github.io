@@ -10,14 +10,7 @@ const data = {
       "tags": [],
       "icon": "briefcase"
     },
-    {
-      "title": "Shiprocket Limited",
-      "duration": "September 2023 - August 2025",
-      "subtitle": "Software Engineer",
-      "details": [],
-      "tags": [],
-      "icon": "briefcase"
-    }
+
   ],
   "education": [
     {

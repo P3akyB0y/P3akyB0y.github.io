@@ -321,6 +321,101 @@ function getBlogDate(publishDate) {
   }
 }
 
+// Example data for Work Experience
+const experienceData = [
+  {
+    title: "Cybersecurity Analyst",
+    company: "ABC Corp",
+    date: "2022 - Present",
+    description: "Responsible for monitoring and securing company networks.",
+    icon: "fa-briefcase"
+  },
+  {
+    title: "IT Intern",
+    company: "XYZ Inc",
+    date: "2021 - 2022",
+    description: "Assisted with IT support and network troubleshooting.",
+    icon: "fa-briefcase"
+  }
+];
+
+// Example data for Education
+const educationData = [
+  {
+    degree: "B.S. in Computer Science",
+    school: "Sam Houston State University",
+    date: "2018 - 2022",
+    description: "Focused on cybersecurity and software engineering.",
+    icon: "fa-graduation-cap"
+  },
+  {
+    degree: "CompTIA Security+",
+    school: "CompTIA",
+    date: "2023",
+    description: "Certification in cybersecurity fundamentals.",
+    icon: "fa-certificate"
+  },
+  {
+    degree: "CompTIA Network+",
+    school: "CompTIA",
+    date: "2022",
+    description: "Certification in networking concepts.",
+    icon: "fa-certificate"
+  }
+];
+
+// Render Work Experience with icon
+function renderExperience() {
+  const container = document.getElementById('experience');
+  if (!container) return;
+  container.innerHTML = '';
+  experienceData.forEach((exp, idx) => {
+    container.innerHTML += `
+      <div class="timeline-entry">
+        <div class="timeline-entry-inner">
+          <div class="timeline-icon color-2">
+            <i class="fa ${exp.icon}"></i>
+            <span class="badge">${idx + 1}</span>
+          </div>
+          <div class="timeline-label">
+            <h2>${exp.title} <span>${exp.company}</span></h2>
+            <p class="timeline-sublabel">${exp.date}</p>
+            <p class="timeline-text">${exp.description}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Render Education with icon
+function renderEducation() {
+  const container = document.getElementById('education');
+  if (!container) return;
+  container.innerHTML = '';
+  educationData.forEach((edu) => {
+    container.innerHTML += `
+      <div class="timeline-entry">
+        <div class="timeline-entry-inner">
+          <div class="timeline-icon color-2">
+            <i class="fa ${edu.icon}"></i>
+          </div>
+          <div class="timeline-label">
+            <h2>${edu.degree} <span>${edu.school}</span></h2>
+            <p class="timeline-sublabel">${edu.date}</p>
+            <p class="timeline-text">${edu.description}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderExperience();
+  renderEducation();
+});
+
 populateBio(bio, "bio");
 
 populateSkills(skills, "skills");
