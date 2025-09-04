@@ -1,0 +1,6 @@
+# Use Git LFS for large binaries (install git-lfs first: git lfs install)
+# Uncomment the types you want tracked by LFS
+# *.pdf filter=lfs diff=lfs merge=lfs -text
+# *.zip filter=lfs diff=lfs merge=lfs -text
+# *.png filter=lfs diff=lfs merge=lfs -text
+# *.jpg filter=lfs diff=lfs merge=lfs -text

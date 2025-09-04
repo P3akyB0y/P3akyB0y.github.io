@@ -1,0 +1,28 @@
+# Node / JS
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Vite/project build output (if any at repo root)
+dist/
+build/
+.vite/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.env
+.env.local
+
+# Terminal-portfolio specific (also add separate below, this is safe)
+terminal-portfolio/node_modules/
+terminal-portfolio/dist/
+terminal-portfolio/.vite/
+terminal-portfolio/.env
+terminal-portfolio/.env.local
+terminal-portfolio/npm-debug.log*
