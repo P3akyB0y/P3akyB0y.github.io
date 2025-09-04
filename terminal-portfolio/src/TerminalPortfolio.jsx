@@ -11,7 +11,7 @@ export default function TerminalPortfolio() {
   const PROFILE = {
     name: "Nicholas Broussard",
     handle: "@P3akyB0y",
-    role: "Aspiring Cybersecurity Practitioner",
+    role: "Aspiring Cybersecurity Professional",
     location: "Houston, TX",
     bio:
       "I build accessible, performant web apps. I love terminals, small utilities, and clean design.",
@@ -277,33 +277,43 @@ export default function TerminalPortfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-neutral-100 p-6 flex items-center justify-center">
+    <div className="h-screen bg-neutral-900 text-neutral-100 p-6 flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.35 }}
-        className="w-full max-w-screen-xl mx-auto shadow-2xl rounded-2xl border border-neutral-800 overflow-hidden"
+        className="w-full max-w-screen-xl mx-auto shadow-2xl border border-neutral-800 overflow-hidden h-full"
       >
         {/* Header (attach ref) */}
-        <div ref={headerRef} className="flex items-center justify-between px-4 py-3 bg-neutral-850 border-b border-neutral-800">
-          <div className="flex items-center">
-            <div>
-              <div className="text-sm font-mono">{PROFILE.name} — terminal</div>
-              <div className="text-xs text-neutral-400 font-mono">{PROFILE.role}</div>
-            </div>
+        <div
+          ref={headerRef}
+          className="relative flex items-center justify-between px-4 py-3 bg-neutral-850 border-b border-neutral-800"
+        >
+          {/* left side (keep empty or add controls) */}
+          <div className="flex items-center min-w-0">
+            {/* reserved for left-aligned controls if needed */}
           </div>
-          <div className="text-xs text-neutral-500">Press <kbd className="px-1 py-0.5 rounded bg-neutral-800">Enter</kbd> to run command</div>
+
+          {/* centered title + role (stacked and truly centered) */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
+            <div className="text-sm font-mono leading-tight">{PROFILE.name} — terminal</div>
+            <div className="text-xs text-neutral-400 font-mono mt-0.5">{PROFILE.role}</div>
+          </div>
+
+          {/* right side */}
+          <div className="text-xs text-neutral-500">
+            Press <kbd className="px-1 py-0.5 bg-neutral-800">Enter</kbd> to run command
+          </div>
         </div>
 
-        {/* Body */}
-        <div className="grid grid-cols-1 md:grid-cols-4">
-          {/* left column: terminal */}
-          <div className="md:col-span-3 p-4 bg-black bg-opacity-40">
+        {/* Body: use flex so left column grows and right column stays fixed width */}
+        <div className="flex h-full">
+          {/* left column: terminal (flexes) */}
+          <div className="flex-1 min-w-0 p-4 bg-black bg-opacity-40 flex flex-col">
             <div
               ref={scrollRef}
-              // apply computed pixel height when available, otherwise fallback to vh classes
               style={terminalHeight ? { height: `${terminalHeight}px` } : undefined}
-              className="w-full h-[60vh] md:h-[70vh] overflow-auto font-mono text-sm leading-relaxed text-neutral-200"
+              className="w-full min-w-0 overflow-auto font-mono text-sm leading-relaxed text-neutral-200 flex-1"
             >
               {lines.length === 0 && (
                 <div className="text-neutral-500 italic">terminal cleared. type 'help' to see commands.</div>
@@ -350,9 +360,9 @@ export default function TerminalPortfolio() {
             </div>
           </div>
 
-          {/* right column: profile card */}
-          <aside className="md:col-span-1 p-4 border-l border-neutral-800 bg-gradient-to-b from-neutral-900 to-neutral-950">
-            <div className="flex flex-col items-start gap-3">
+          {/* right column: profile card (fixed width) */}
+          <aside className="w-80 md:w-96 flex-shrink-0 p-4 border-l border-neutral-800 bg-gradient-to-b from-neutral-900 to-neutral-950 flex flex-col">
+            <div className="flex flex-col items-start gap-3 h-full">
               <div className="w-full flex items-center justify-between">
                 <div>
                   <div className="text-lg font-semibold">{PROFILE.name}</div>
