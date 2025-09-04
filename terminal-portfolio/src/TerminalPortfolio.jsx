@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 
 // TerminalPortfolio.jsx
@@ -15,12 +15,13 @@ export default function TerminalPortfolio() {
     location: "Houston, TX",
     bio:
       "I build accessible, performant web apps. I love terminals, small utilities, and clean design.",
-    resumeLink: "#", // replace with resume URL
+    // if you placed resume.pdf in terminal-portfolio/public, this will open it
+    resumeLink: "/resume.pdf",
   };
 
   const PROJECTS = [
     {
-      title: "Linux Terminal Web Portfolio ",
+      title: "Linux Terminal Web Portfolio",
       desc: "OMG ITS LIKE YOURE CURRENTLY USING IT. WHAAAAAAAAAAAT",
       url: "#",
       tech: ["React", "Node", "Postgres"],
@@ -29,10 +30,18 @@ export default function TerminalPortfolio() {
       title: "Capstone Software Engineering Project",
       desc: "Intruwatch my college classmates and i designed and developed a Host Base Intrusion Detection System (HIDS) that monitors and analyzes the internals of a computing system as well as the network packets on its network interfaces for suspicious activity.",
       url: "#",
-      tech: ["Python", "Packet Sniffing and Instpection"],
+      tech: ["Python", "Packet Sniffing and Inspection"], // typo fixed
+    },
+    {
+      title: "My Personal Home Server",
+      desc: "A self-hosted solution for managing my personal projects and experiments.",
+      url: "#",
+      tech: ["Ubuntu", "Docker", "Networking"], // typo fixed
     },
   ];
-  const WorkExperience = [
+
+  // renamed to conventional camelCase
+  const workExperience = [
     {
       title: "Northrock Cybersecurity - Field Technician",
       desc: "Add Experience Description.",
@@ -54,6 +63,11 @@ export default function TerminalPortfolio() {
   const inputRef = useRef(null);
   const scrollRef = useRef(null);
 
+  // new: refs + state for auto-scaling
+  const headerRef = useRef(null);
+  const controlsRef = useRef(null);
+  const [terminalHeight, setTerminalHeight] = useState(null);
+
   // initial welcome lines
   useEffect(() => {
     const welcome = [
@@ -72,6 +86,83 @@ export default function TerminalPortfolio() {
     }
   }, [lines]);
 
+  // detect resume file at runtime (prefer NBroussardResume.pdf)
+  const [resumeLink, setResumeLink] = useState(PROFILE.resumeLink);
+  useEffect(() => {
+    let cancelled = false;
+    const candidates = ["/NBroussardResume.pdf", "/resume.pdf"];
+    (async function findResume() {
+      for (const p of candidates) {
+        try {
+          const res = await fetch(p, { method: "HEAD" });
+          if (!cancelled && res && res.ok) {
+            setResumeLink(p);
+            return;
+          }
+        } catch (e) {
+          // ignore and try next
+        }
+      }
+      if (!cancelled) setResumeLink(PROFILE.resumeLink || "/resume.pdf");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // compute terminal height using useLayoutEffect for accurate DOM measurements
+	useLayoutEffect(() => {
+		let raf = null;
+		const buffer = 48; // adjust if you need more breathing room
+
+		function compute() {
+			const winH = window.innerHeight || document.documentElement.clientHeight;
+			const headerH = headerRef.current?.offsetHeight || 0;
+			const controlsH = controlsRef.current?.offsetHeight || 0;
+			const height = Math.max(160, winH - headerH - controlsH - buffer);
+			setTerminalHeight(height);
+		}
+
+		const schedule = () => {
+			if (raf) cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(compute);
+		};
+
+		// initial compute
+		compute();
+
+		window.addEventListener("resize", schedule);
+		window.addEventListener("orientationchange", schedule);
+		window.addEventListener("focus", schedule);
+
+		let ro;
+		if (typeof ResizeObserver !== "undefined") {
+			ro = new ResizeObserver(schedule);
+			if (headerRef.current) ro.observe(headerRef.current);
+			if (controlsRef.current) ro.observe(controlsRef.current);
+			ro.observe(document.body); // fallback for layout shifts
+		} else {
+			// minimal fallback: observe DOM mutations
+			const mo = new MutationObserver(schedule);
+			mo.observe(document.body, { childList: true, subtree: true, attributes: true });
+			return () => {
+				if (raf) cancelAnimationFrame(raf);
+				window.removeEventListener("resize", schedule);
+				window.removeEventListener("orientationchange", schedule);
+				window.removeEventListener("focus", schedule);
+				mo.disconnect();
+			};
+		}
+
+		return () => {
+			if (raf) cancelAnimationFrame(raf);
+			window.removeEventListener("resize", schedule);
+			window.removeEventListener("orientationchange", schedule);
+			window.removeEventListener("focus", schedule);
+			if (ro) ro.disconnect();
+		};
+	}, [headerRef, controlsRef]);
+
   // command handlers
   const commands = {
     help: () => [
@@ -79,6 +170,7 @@ export default function TerminalPortfolio() {
       "help - show this help",
       "about - who I am",
       "projects - list projects",
+      "wexp - list work experience",
       "skills - list tech skills",
       "contact - contact info",
       "resume - open resume link",
@@ -91,7 +183,20 @@ export default function TerminalPortfolio() {
     ],
     projects: () => [
       "Projects:",
-      ...PROJECTS.flatMap((p, i) => [`${i + 1}. ${p.title} — ${p.desc}`, `   → ${p.url}`, `   tech: ${p.tech.join(", ")}`]),
+      ...PROJECTS.flatMap((p, i) => [
+        `${i + 1}. ${p.title} — ${p.desc}`,
+        `   → ${p.url}`,
+        `   tech: ${p.tech.join(", ")}`,
+      ]),
+    ],
+    // new handler for work experience
+    wexp: () => [
+      "Work Experience:",
+      ...workExperience.flatMap((w, i) => [
+        `${i + 1}. ${w.title} — ${w.desc}`,
+        w.url ? `   → ${w.url}` : "",
+        w.tech && w.tech.length ? `   tech: ${w.tech.join(", ")}` : "",
+      ]),
     ],
     skills: () => [
       "Skills:",
@@ -103,7 +208,8 @@ export default function TerminalPortfolio() {
       `LinkedIn : ${CONTACT.linkedin}`,
     ],
     resume: () => {
-      window.open(PROFILE.resumeLink, "_blank");
+      // open the detected resume file in a new tab (no embedding)
+      window.open(resumeLink || PROFILE.resumeLink, "_blank");
       return ["Opening resume..."];
     },
     clear: () => {
@@ -176,10 +282,10 @@ export default function TerminalPortfolio() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.35 }}
-        className="w-full max-w-4xl shadow-2xl rounded-2xl border border-neutral-800 overflow-hidden"
+        className="w-full max-w-screen-xl mx-auto shadow-2xl rounded-2xl border border-neutral-800 overflow-hidden"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-neutral-850 border-b border-neutral-800">
+        {/* Header (attach ref) */}
+        <div ref={headerRef} className="flex items-center justify-between px-4 py-3 bg-neutral-850 border-b border-neutral-800">
           <div className="flex items-center">
             <div>
               <div className="text-sm font-mono">{PROFILE.name} — terminal</div>
@@ -195,7 +301,9 @@ export default function TerminalPortfolio() {
           <div className="md:col-span-3 p-4 bg-black bg-opacity-40">
             <div
               ref={scrollRef}
-              className="h-[60vh] md:h-[70vh] overflow-auto font-mono text-sm leading-relaxed text-neutral-200"
+              // apply computed pixel height when available, otherwise fallback to vh classes
+              style={terminalHeight ? { height: `${terminalHeight}px` } : undefined}
+              className="w-full h-[60vh] md:h-[70vh] overflow-auto font-mono text-sm leading-relaxed text-neutral-200"
             >
               {lines.length === 0 && (
                 <div className="text-neutral-500 italic">terminal cleared. type 'help' to see commands.</div>
@@ -208,7 +316,8 @@ export default function TerminalPortfolio() {
               ))}
             </div>
 
-            <div className="mt-4 flex items-start gap-3">
+            {/* controls: attach ref so height is measured */}
+            <div ref={controlsRef} className="mt-4 flex items-start gap-3">
               <div className="flex-shrink-0">
                 <Prompt />
               </div>
@@ -256,8 +365,14 @@ export default function TerminalPortfolio() {
                 <div className="mt-2 flex flex-col gap-2">
                   <button onClick={() => runCommand("about")} className="text-left px-3 py-2 rounded bg-neutral-850 hover:bg-neutral-800 text-sm">about</button>
                   <button onClick={() => runCommand("projects")} className="text-left px-3 py-2 rounded bg-neutral-850 hover:bg-neutral-800 text-sm">projects</button>
+                  <button onClick={() => runCommand("wexp")} className="text-left px-3 py-2 rounded bg-neutral-850 hover:bg-neutral-800 text-sm">work experience</button>
                   <button onClick={() => runCommand("contact")} className="text-left px-3 py-2 rounded bg-neutral-850 hover:bg-neutral-800 text-sm">contact</button>
-                  <button onClick={() => runCommand("resume")} className="text-left px-3 py-2 rounded bg-neutral-850 hover:bg-neutral-800 text-sm">resume</button>
+                  <button
+                    onClick={() => window.open(resumeLink || PROFILE.resumeLink, "_blank")}
+                    className="text-left px-3 py-2 rounded bg-neutral-850 hover:bg-neutral-800 text-sm"
+                  >
+                    resume
+                  </button>
                 </div>
               </div>
 
